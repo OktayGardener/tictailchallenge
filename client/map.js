@@ -157,9 +157,22 @@
     this.prefs = prefs;
 
     this.search = function(cb) {
-      // TODO: Implement this.
+        var API = 'http://0.0.0.0:5000/search'
+        jQuery.getJSON(API, {
+            count: this.prefs.count,
+            radius: this.prefs.radius,
+            lat: this.prefs.position.lat,
+            lng: this.prefs.position.lng,
+            tags: this.prefs.tags.toString()
+        })
+        .done(function(data){
+            cb(true, data.products);
+        })
+        .fail(function(data){
+            cb(data);
+        });
     };
-  };
+};
 
 
   /*
