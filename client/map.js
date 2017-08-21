@@ -166,7 +166,7 @@
             tags: this.prefs.tags.toString()
         })
         .done(function(data){
-            cb(true, data.products);
+            cb(JSON.stringify(data.products, null, 2));
         })
         .fail(function(data){
             cb(data);
