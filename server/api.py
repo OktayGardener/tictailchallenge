@@ -72,12 +72,14 @@ def shops_with_tag(shops, tags):
     tags: list
     """
     if len(current_app.tags['tag'].isin(tags)) == 0:
+        print('No such tags')
         return shops
     else:
         tag_ids = current_app.tags[current_app.tags['tag'].isin(tags)].index.tolist()
         shop_tag_ids = current_app.taggings[current_app.taggings['shop_id'].isin(shops)]
         shops_with_tags = shop_tag_ids[shop_tag_ids['tag_id'].isin(tag_ids)].shop_id.tolist()
         if len(shops_with_tags) == 0:
+            print("No close shops with tags found")
             return shops
         return shops_with_tags
 
