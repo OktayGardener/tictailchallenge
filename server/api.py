@@ -30,11 +30,15 @@ def load_data():
 def item_request_query(count, radius, lat, lng, tags=None):
     current_app.shops['dist'] = haversine_np(lng, lat,
     current_app.shops['lng'], current_app.shops['lat'])
-    shops = current_app.shops.index.tolist()
-    if tags:
-        shops_with_tags = filter_items_tags(shops, tags)
 
-    items = most_popular_items(shops, count)
+    shops = current_app.shops[current_app.shops['dist'] < radius]
+    closest_shops = shops.sort_values(['dist'], ascending=False).index.tolist()
+
+    if tags:
+        closest_shops = filter_items_tags(closest_shops, tags)
+
+    items = most_popular_items(closest_shops, count)
+
     return items['title'].tolist()
 
 def most_popular_items(shops, n):
@@ -48,7 +52,9 @@ def filter_items_tags(shops, tags):
     else:
         tag_ids = current_app.tags[current_app.tags['tag'].isin(tags)].index.tolist()
         shop_tag_ids = current_app.taggings[current_app.taggings['shop_id'].isin(shops)]
-        shops_with_tags = shop_tag_ids[shop_tag_ids['tag_id'].isin(tag_ids)]
+        shops_with_tags = shop_tag_ids[shop_tag_ids['tag_id'].isin(tag_ids)].shop_id.tolist()
+        if len(shops_with_tags) == 0:
+            return shops
         return shops_with_tags
 
 def haversine_np(lon1, lat1, lon2, lat2):
